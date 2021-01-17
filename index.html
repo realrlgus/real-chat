@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>기현이가 만드는 채팅 프로그램</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="chat">
+      <div class="chat__header">
+        <div class="header__title">채팅 프로그램</div>
+      </div>
+      <div class="chat__section">
+        <textarea class="section__textarea" id="chat-textarea"></textarea>
+      </div>
+      <form class="chat__form" id="chat-submit">
+        <div class="chat__column">
+          <input type="text" id="chat-name" readonly />
+          <input type="text" id="chat-message" />
+          <input type="submit" value="전송" />
+        </div>
+      </form>
+    </div>
+    <script src="//code.jquery.com/jquery-latest.min.js"></script>
+    <script src="//cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <script>
+      const socket = io();
+      $("#chat-submit").on("submit", (e) => {
+        e.preventDefault();
+        const name = $("#chat-name");
+        const message = $("#chat-message");
+
+        socket.emit("send message", name.val(), message.val());
+
+        message.val("");
+        message.focus();
+      });
+
+      socket.on("receive message", (msg) => {
+        const textarea = $("#chat-textarea");
+
+        textarea.append(msg + "\n");
+        textarea.scrollTop(textarea[0].scrollHeight);
+      });
+
+      socket.on("change name", (name) => {
+        $("#chat-name").val(name);
+      });
+    </script>
+  </body>
+</html>
